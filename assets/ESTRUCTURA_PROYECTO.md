@@ -1,6 +1,6 @@
 # Estructura del Proyecto - Sistema de Gestión Antojitos ALKASE
 
-## 📁 Organización de Carpetas
+## Organización de Carpetas
 
 ```
 ProyectoIntegrado/
@@ -49,7 +49,7 @@ ProyectoIntegrado/
 └── index.php                  # Punto de entrada principal
 ```
 
-## 🗄️ Diseño de Base de Datos
+##  Diseño de Base de Datos
 
 ### Tablas Principales
 
@@ -127,7 +127,7 @@ productos (1) ──→ (N) movimientos_inventario
 ventas (1) ──→ (N) detalle_ventas
 ```
 
-## 🔐 Sistema de Roles y Permisos
+##  Sistema de Roles y Permisos
 
 ### Roles
 
@@ -204,7 +204,7 @@ if (!isAdmin()) {
 <?php endif; ?>
 ```
 
-## 🔄 Flujo de Autenticación
+##  Flujo de Autenticación
 
 1. Usuario accede a `index.php` o `views/login.php`
 2. Ingresa credenciales (usuario y contraseña)
@@ -217,7 +217,7 @@ if (!isAdmin()) {
 5. Redirección a `views/dashboard.php`
 6. Cada página verifica permisos antes de mostrar contenido
 
-## 📝 Convenciones de Código
+##  Convenciones de Código
 
 ### Nomenclatura
 - **Archivos**: snake_case (ej: `auth.php`, `user_model.php`)
@@ -226,11 +226,11 @@ if (!isAdmin()) {
 - **Variables**: snake_case (ej: `$user_id`, `$nombre_usuario`)
 
 ### Seguridad
-- ✅ Uso de PDO con prepared statements
-- ✅ Hash de contraseñas con `password_hash()`
-- ✅ Sanitización de inputs con `htmlspecialchars()`
-- ✅ Regeneración de ID de sesión
-- ✅ Validación de permisos en cada controlador
+-  Uso de PDO con prepared statements
+-  Hash de contraseñas con `password_hash()`
+-  Sanitización de inputs con `htmlspecialchars()`
+-  Regeneración de ID de sesión
+-  Validación de permisos en cada controlador
 
 ### Estructura de Controladores
 ```php
@@ -251,7 +251,7 @@ class NombreController {
 ?>
 ```
 
-## 🚀 Instalación y Configuración
+##  Instalación y Configuración
 
 1. **Crear la base de datos:**
    ```sql
@@ -279,14 +279,14 @@ class NombreController {
    ```
    (Usar `password_hash('tu_contraseña', PASSWORD_DEFAULT)` para generar el hash)
 
-## 📋 Próximos Pasos
+##  Próximos Pasos
 
-1. ✅ Estructura de carpetas
-2. ✅ Diseño de base de datos
-3. ✅ Sistema de autenticación
-4. ⏳ Módulo de gestión de usuarios
-5. ⏳ Módulo de gestión de inventario
-6. ⏳ Módulo de punto de venta
-7. ⏳ Sistema de alertas de stock
-8. ⏳ Reportes y estadísticas
+1. (hecho) Estructura de carpetas
+2. (hecho) Diseño de base de datos
+3. (hecho) Sistema de autenticación
+4. (hecho) Módulo de gestión de usuarios
+5. (pendiente) Módulo de gestión de inventario
+6. (pendiente) Módulo de punto de venta
+7. (pendiente) Sistema de alertas de stock
+8. (pendiente) Reportes y estadísticas
 

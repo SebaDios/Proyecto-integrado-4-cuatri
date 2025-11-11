@@ -6,7 +6,12 @@ function isLoggedIn() {
 }
 
 function isAdmin() {
-    return isLoggedIn() && $_SESSION['user_role'] === 'Admin';
+    if (!isLoggedIn()) {
+        return false;
+    }
+    // Comparación case-insensitive y sin espacios
+    $role = trim($_SESSION['user_role']);
+    return strtolower($role) === 'admin';
 }
 
 function requireLogin() {

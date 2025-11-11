@@ -2,7 +2,7 @@
 require_once '../../inc/session.php';
 requireAdmin(); // Solo admin puede acceder
 
-require_once '../../models/User.php';
+require_once '../../models/user.php';
 
 $userModel = new User();
 $users = $userModel->getAll();

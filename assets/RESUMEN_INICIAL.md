@@ -1,65 +1,65 @@
 # Resumen Inicial - Sistema Antojitos ALKASE
 
-## ✅ Lo que se ha completado
+##  Lo que se ha completado
 
 ### 1. Estructura de Carpetas
-- ✅ Organización completa del proyecto siguiendo el patrón MVC
-- ✅ Separación de responsabilidades (config, controllers, models, views, inc)
-- ✅ Carpeta `sql` para scripts de base de datos
-- ✅ Carpeta `assets` para recursos estáticos
+-  Organización completa del proyecto siguiendo el patrón MVC
+-  Separación de responsabilidades (config, controllers, models, views, inc)
+-  Carpeta `sql` para scripts de base de datos
+-  Carpeta `assets` para recursos estáticos
 
 ### 2. Base de Datos
-- ✅ Diseño completo de 5 tablas:
+-  Diseño completo de 5 tablas:
   - `usuarios`: Gestión de usuarios y autenticación
   - `productos`: Catálogo de productos con control de stock
   - `ventas`: Registro de transacciones
   - `detalle_ventas`: Detalle de productos por venta
   - `movimientos_inventario`: Historial de movimientos
-- ✅ Relaciones y claves foráneas definidas
-- ✅ Índices para optimización
-- ✅ Script SQL listo para importar
+-  Relaciones y claves foráneas definidas
+-  Índices para optimización
+-  Script SQL listo para importar
 
 ### 3. Sistema de Autenticación
-- ✅ Clase `Database` para conexión PDO segura
-- ✅ Controlador de autenticación (`AuthController`)
-- ✅ Login funcional con verificación de contraseñas
-- ✅ Sistema de sesiones seguro
-- ✅ Logout implementado
+-  Clase `Database` para conexión PDO segura
+-  Controlador de autenticación (`AuthController`)
+-  Login funcional con verificación de contraseñas
+-  Sistema de sesiones seguro
+-  Logout implementado
 
 ### 4. Sistema de Roles y Permisos
-- ✅ Funciones de verificación en `inc/session.php`:
+-  Funciones de verificación en `inc/session.php`:
   - `isLoggedIn()`: Verifica autenticación
   - `isAdmin()`: Verifica rol de administrador
   - `requireLogin()`: Fuerza autenticación
   - `requireAdmin()`: Fuerza permisos de admin
-- ✅ Documentación completa en `ROLES_Y_PERMISOS.md`
+-  Documentación completa en `ROLES_Y_PERMISOS.md`
 
 ### 5. Archivos Principales
-- ✅ `index.php`: Punto de entrada del sistema
-- ✅ `config/database.php`: Configuración de conexión
-- ✅ `inc/session.php`: Funciones de sesión
-- ✅ `inc/functions.php`: Funciones auxiliares
-- ✅ `views/login.php`: Página de inicio de sesión
-- ✅ `views/dashboard.php`: Panel principal con menú
-
-### 6. Estilos y UI
-- ✅ CSS completo y moderno (`assets/css.css`)
-- ✅ Diseño responsive
-- ✅ Estilos para formularios, tablas, botones, alertas
-- ✅ Integración de CSS en vistas principales
+-  `index.php`: Punto de entrada del sistema
+-  `config/database.php`: Configuración de conexión
+-  `inc/session.php`: Funciones de sesión
+-  `inc/functions.php`: Funciones auxiliares
+-  `views/login.php`: Página de inicio de sesión
+-  `views/dashboard.php`: Panel principal con menú
 
 ### 7. Documentación
-- ✅ `ESTRUCTURA_PROYECTO.md`: Explicación completa de la estructura
-- ✅ `ROLES_Y_PERMISOS.md`: Guía detallada del sistema de permisos
-- ✅ `README.md`: Instrucciones de instalación
-- ✅ `RESUMEN_INICIAL.md`: Este documento
+-  `ESTRUCTURA_PROYECTO.md`: Explicación completa de la estructura
+-  `ROLES_Y_PERMISOS.md`: Guía detallada del sistema de permisos
+-  `README.md`: Instrucciones de instalación
+-  `RESUMEN_INICIAL.md`: Este documento
 
 ### 8. Scripts Auxiliares
-- ✅ `sql/database.sql`: Estructura de base de datos
-- ✅ `sql/insert_admin.sql`: Script para crear usuario admin
-- ✅ `public/generate_password.php`: Generador de hashes de contraseña
+-  `sql/database.sql`: Estructura de base de datos
+-  `sql/insert_admin.sql`: Script para crear usuario admin
+-  `public/generate_password.php`: Generador de hashes de contraseña
 
-## 📋 Próximos Pasos (Módulos por Desarrollar)
+##  Próximos Pasos (Módulos por Desarrollar y diseño)
+
+### Estilos y UI
+-  [ ] CSS completo y moderno (`assets/css.css`)
+-  [ ] Diseño responsive
+-  [ ] Estilos para formularios, tablas, botones, alertas
+-  [ ] Integración de CSS en vistas principales
 
 ### Módulo 1: Gestión de Usuarios (Solo Admin)
 - [ ] Controlador completo (`controllers/users.php`)
@@ -92,7 +92,7 @@
 - [ ] Reportes para Usuario (solo sus ventas)
 - [ ] Corte de caja diario
 
-## 🔐 Credenciales por Defecto
+##  Credenciales por Defecto
 
 **IMPORTANTE:** Después de importar la base de datos, ejecuta `sql/insert_admin.sql` o crea el usuario manualmente.
 
@@ -104,7 +104,7 @@
   - Usuario: `usuario`
   - Contraseña: `usuario123`
 
-## 🚀 Cómo Empezar
+##  Cómo Empezar
 
 1. **Importar la base de datos:**
    ```sql
@@ -123,13 +123,13 @@
    http://localhost/ProyectoIntegrado/
    ```
 
-## 📚 Archivos de Referencia
+##  Archivos de Referencia
 
 - **Estructura del proyecto:** `ESTRUCTURA_PROYECTO.md`
 - **Roles y permisos:** `ROLES_Y_PERMISOS.md`
 - **Instalación:** `README.md`
 
-## 💡 Conceptos Clave Implementados
+##  Conceptos Clave Implementados
 
 ### Patrón MVC
 - **Modelos** (`models/`): Acceso a datos
@@ -137,24 +137,21 @@
 - **Controladores** (`controllers/`): Lógica de negocio
 
 ### Seguridad
-- ✅ Contraseñas hasheadas con `password_hash()`
-- ✅ Prepared statements (PDO)
-- ✅ Sanitización de inputs
-- ✅ Validación de permisos en cada controlador
-- ✅ Regeneración de ID de sesión
+-  Contraseñas hasheadas con `password_hash()`
+-  Prepared statements (PDO)
+-  Sanitización de inputs
+-  Validación de permisos en cada controlador
+-  Regeneración de ID de sesión
 
 ### Roles
 - **Admin**: Acceso completo
 - **Usuario**: Solo ventas y reportes personales
 
-## 🎯 Estado Actual
+##  Estado Actual
 
 El sistema tiene la **base sólida** implementada:
-- ✅ Autenticación funcional
-- ✅ Sistema de roles operativo
-- ✅ Estructura de carpetas organizada
-- ✅ Base de datos diseñada
-- ✅ Estilos básicos aplicados
-
-**Listo para desarrollar los módulos específicos** (usuarios, inventario, ventas) que implementaremos paso a paso.
-
+-  Autenticación funcional
+-  Sistema de roles operativo
+-  Estructura de carpetas organizada
+-  Base de datos diseñada
+-  Estilos básicos aplicados

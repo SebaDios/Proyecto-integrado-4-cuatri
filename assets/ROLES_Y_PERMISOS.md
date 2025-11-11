@@ -1,33 +1,33 @@
 # Sistema de Roles y Permisos - Antojitos ALKASE
 
-## 📋 Descripción General
+##  Descripción General
 
 El sistema implementa un control de acceso basado en roles (RBAC - Role-Based Access Control) con dos niveles de usuario: **Admin** y **Usuario**.
 
-## 🔐 Roles del Sistema
+##  Roles del Sistema
 
 ### 1. Administrador (Admin)
 
 **Permisos completos:**
-- ✅ **Gestión de Usuarios**: Crear, leer, actualizar y eliminar usuarios
-- ✅ **Gestión de Inventario**: CRUD completo de productos
-- ✅ **Registrar Ventas**: Puede crear nuevas ventas
-- ✅ **Ver Todas las Ventas**: Acceso a todas las ventas del sistema
-- ✅ **Modificar Ventas**: Puede editar o cancelar cualquier venta
-- ✅ **Reportes Completos**: Acceso a estadísticas globales
-- ✅ **Movimientos de Inventario**: Registrar entradas, salidas y ajustes
+-  **Gestión de Usuarios**: Crear, leer, actualizar y eliminar usuarios
+-  **Gestión de Inventario**: CRUD completo de productos
+-  **Registrar Ventas**: Puede crear nuevas ventas
+-  **Ver Todas las Ventas**: Acceso a todas las ventas del sistema
+-  **Modificar Ventas**: Puede editar o cancelar cualquier venta
+-  **Reportes Completos**: Acceso a estadísticas globales
+-  **Movimientos de Inventario**: Registrar entradas, salidas y ajustes
 
 ### 2. Usuario
 
 **Permisos limitados:**
-- ✅ **Registrar Ventas**: Puede crear nuevas ventas
-- ✅ **Ver Sus Ventas**: Solo puede ver las ventas que él mismo registró
-- ❌ **Modificar Ventas**: No puede editar o eliminar ventas (ni propias ni ajenas)
-- ❌ **Gestión de Usuarios**: Sin acceso
-- ❌ **Gestión de Inventario**: Sin acceso
-- ✅ **Reportes Personales**: Solo sus propias estadísticas
+-  **Registrar Ventas**: Puede crear nuevas ventas
+-  **Ver Sus Ventas**: Solo puede ver las ventas que él mismo registró
+-  **Modificar Ventas**: No puede editar o eliminar ventas (ni propias ni ajenas)
+-  **Gestión de Usuarios**: Sin acceso
+-  **Gestión de Inventario**: Sin acceso
+-  **Reportes Personales**: Solo sus propias estadísticas
 
-## 🛡️ Implementación Técnica
+##  Implementación Técnica
 
 ### 1. Almacenamiento en Base de Datos
 
@@ -88,7 +88,7 @@ function requireAdmin() {
 }
 ```
 
-## 📝 Uso en Controladores
+##  Uso en Controladores
 
 ### Ejemplo 1: Controlador Solo para Admin
 
@@ -139,7 +139,7 @@ class SalesController {
 ?>
 ```
 
-## 🎨 Uso en Vistas
+##  Uso en Vistas
 
 ### Mostrar/Ocultar Elementos según Rol
 
@@ -178,7 +178,7 @@ requireLogin();
 <?php endif; ?>
 ```
 
-## 🔍 Filtrado de Datos por Rol
+##  Filtrado de Datos por Rol
 
 ### En Modelos
 
@@ -228,11 +228,11 @@ public function index() {
 }
 ```
 
-## 🚫 Prevención de Acceso No Autorizado
+##  Prevención de Acceso No Autorizado
 
 ### 1. Verificación en Cada Página
 
-**❌ INCORRECTO:**
+** INCORRECTO:**
 ```php
 // Sin verificación - CUALQUIERA puede acceder
 <?php
@@ -240,7 +240,7 @@ $users = $userModel->getAll();
 ?>
 ```
 
-**✅ CORRECTO:**
+** CORRECTO:**
 ```php
 <?php
 require_once '../inc/session.php';
@@ -313,7 +313,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 | Reportes Globales | ✅ | ❌ |
 | Reportes Personales | ✅ | ✅ |
 
-## 🔄 Flujo de Verificación
+##  Flujo de Verificación
 
 ```
 Usuario accede a una página
@@ -333,7 +333,7 @@ Usuario accede a una página
     Renderizar contenido
 ```
 
-## 💡 Mejores Prácticas
+##  Mejores Prácticas
 
 1. **Siempre verificar permisos**: Nunca confíes solo en la UI, verifica en el backend
 2. **Principio de menor privilegio**: Los usuarios solo tienen los permisos mínimos necesarios
@@ -341,7 +341,7 @@ Usuario accede a una página
 4. **Validación doble**: Verifica permisos tanto en controladores como en modelos
 5. **Mensajes claros**: Si un usuario intenta acceder sin permisos, muestra un mensaje claro
 
-## 🛠️ Extensión Futura
+##  Extensión Futura
 
 Si necesitas agregar más roles en el futuro:
 

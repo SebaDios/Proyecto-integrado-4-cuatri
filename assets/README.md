@@ -2,23 +2,23 @@
 
 Sistema web para la gestión de inventario y ventas de Antojitos ALKASE.
 
-## 🚀 Características
+##  Características
 
-- ✅ Sistema de autenticación con roles (Admin/Usuario)
-- ✅ Gestión completa de usuarios (solo Admin)
-- ✅ Gestión de inventario con alertas de stock
-- ✅ Punto de venta integrado
-- ✅ Historial de ventas y reportes
-- ✅ Control de movimientos de inventario
+-  Sistema de autenticación con roles (Admin/Usuario)
+-  Gestión completa de usuarios (solo Admin)
+-  Gestión de inventario con alertas de stock
+-  Punto de venta integrado
+-  Historial de ventas y reportes
+-  Control de movimientos de inventario
 
-## 📋 Requisitos
+##  Requisitos
 
 - PHP 7.4 o superior
 - MySQL 5.7 o superior (o MariaDB)
 - Servidor web (Apache/Nginx) o XAMPP/WAMP
 - Extensiones PHP: PDO, PDO_MySQL
 
-## 🔧 Instalación
+##  Instalación
 
 ### 1. Clonar o copiar el proyecto
 
@@ -64,7 +64,7 @@ VALUES (
 - Usuario: `admin`
 - Contraseña: `admin123`
 
-⚠️ **IMPORTANTE:** Cambia la contraseña después del primer login.
+ **IMPORTANTE:** Cambia la contraseña después del primer login.
 
 ### 5. Configurar la conexión
 
@@ -89,25 +89,25 @@ O si usas un servidor virtual:
 http://antojitos-alkase.local/
 ```
 
-## 👥 Roles y Permisos
+##  Roles y Permisos
 
 ### Administrador (Admin)
-- ✅ Gestión completa de usuarios (crear, editar, eliminar)
-- ✅ Gestión completa de inventario
-- ✅ Registrar ventas
-- ✅ Ver y modificar todas las ventas
-- ✅ Acceso a todos los reportes
+-  Gestión completa de usuarios (crear, editar, eliminar)
+-  Gestión completa de inventario
+-  Registrar ventas
+-  Ver y modificar todas las ventas
+-  Acceso a todos los reportes
 
 ### Usuario
-- ✅ Registrar ventas
-- ✅ Ver solo sus propias ventas (sin modificar)
-- ✅ Ver reportes personales
+-  Registrar ventas
+-  Ver solo sus propias ventas (sin modificar)
+-  Ver reportes personales
 
-## 📁 Estructura del Proyecto
+##  Estructura del Proyecto
 
 Ver `ESTRUCTURA_PROYECTO.md` para detalles completos.
 
-## 🔐 Seguridad
+##  Seguridad
 
 - Contraseñas hasheadas con `password_hash()`
 - Uso de prepared statements (PDO)
@@ -115,13 +115,13 @@ Ver `ESTRUCTURA_PROYECTO.md` para detalles completos.
 - Sanitización de inputs
 - Regeneración de ID de sesión
 
-## 📝 Notas de Desarrollo
+##  Notas de Desarrollo
 
 - El sistema usa el patrón MVC (Modelo-Vista-Controlador)
 - Las rutas son relativas, asegúrate de mantener la estructura de carpetas
 - Los usuarios no se eliminan físicamente, se desactivan (`activo = 0`)
 
-## 🐛 Solución de Problemas
+##  Solución de Problemas
 
 ### Error de conexión a la base de datos
 - Verifica que MySQL esté corriendo
@@ -136,7 +136,7 @@ Ver `ESTRUCTURA_PROYECTO.md` para detalles completos.
 - Verifica que las cookies estén habilitadas
 - Revisa los permisos de escritura en la carpeta de sesiones de PHP
 
-## 📞 Soporte
+##  Soporte
 
 Para más información sobre la estructura y desarrollo, consulta `ESTRUCTURA_PROYECTO.md`.
 

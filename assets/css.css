@@ -70,7 +70,7 @@ main {
 
 .login-container h1 {
     text-align: center;
-    color: #667eea;
+    color: #fdab25;
     margin-bottom: 0.5rem;
 }
 
@@ -115,7 +115,7 @@ main {
 .login-container button {
     width: 100%;
     padding: 0.75rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #fdab25 0%, #6c5336 100%);
     color: white;
     border: none;
     border-radius: 4px;
