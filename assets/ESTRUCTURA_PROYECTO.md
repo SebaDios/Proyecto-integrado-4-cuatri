@@ -291,3 +291,6 @@ class NombreController {
 8. (pendiente) Reportes y estadísticas
 
 ## pablo estuvo aqui
+
+
+## alejandro el rapido martinez
