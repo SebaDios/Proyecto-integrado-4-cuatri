@@ -290,3 +290,4 @@ class NombreController {
 7. (pendiente) Sistema de alertas de stock
 8. (pendiente) Reportes y estadísticas
 
+## pablo estuvo aqui
