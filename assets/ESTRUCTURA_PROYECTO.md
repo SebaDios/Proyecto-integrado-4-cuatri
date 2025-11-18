@@ -117,6 +117,14 @@ Historial de entradas, salidas y ajustes de inventario.
 - `id_usuario` (FK): Usuario que realizó el movimiento
 - `fecha_movimiento`: Timestamp del movimiento
 
+
+#### 6. **Platillos**
+- `id_platillo` (PK): Identificador único
+- `nombre_platilo` nombre del platillo
+- `categoria_platillo`categoria del platillo
+- `precio_platillo`: precio unitario del platillo
+
+
 ### Relaciones
 
 ```

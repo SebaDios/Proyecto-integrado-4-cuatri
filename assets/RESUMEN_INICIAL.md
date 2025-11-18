@@ -71,7 +71,7 @@
 
 ### Módulo 2: Gestión de Inventario (Solo Admin)
 - [ ] Controlador (`controllers/inventory.php`)
-- [ ] Modelo (`models/product.php`) - ✅ Parcialmente implementado
+- [ ] Modelo (`models/product.php`) -  Parcialmente implementado
 - [ ] Vista de lista de productos (`views/inventario.php` o `views/inventory/index.php`)
 - [ ] Vista de crear/editar producto
 - [ ] Sistema de alertas de stock bajo

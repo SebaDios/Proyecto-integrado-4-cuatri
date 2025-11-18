@@ -41,7 +41,7 @@ $is_admin = isAdmin();
             
             <!-- OPCIÓN 2: Gestionar Inventario (SOLO ADMIN) -->
             <div class="menu-option">
-                <a href="inventory/index.php">
+                <a href="productos/index.php">
                     <h3>Gestionar Inventario</h3>
                     <p>Administrar productos y alertas de stock</p>
                 </a>

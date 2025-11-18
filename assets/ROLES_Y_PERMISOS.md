@@ -286,32 +286,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 ```
 
-## 📊 Matriz de Permisos
-
-| Funcionalidad | Admin | Usuario |
-|--------------|-------|---------|
-| Iniciar Sesión | ✅ | ✅ |
-| Ver Dashboard | ✅ | ✅ |
-| **Gestión de Usuarios** |
-| Crear Usuario | ✅ | ❌ |
-| Ver Usuarios | ✅ | ❌ |
-| Editar Usuario | ✅ | ❌ |
-| Eliminar Usuario | ✅ | ❌ |
-| **Gestión de Inventario** |
-| Crear Producto | ✅ | ❌ |
-| Ver Productos | ✅ | ❌ |
-| Editar Producto | ✅ | ❌ |
-| Eliminar Producto | ✅ | ❌ |
-| Ver Alertas de Stock | ✅ | ❌ |
-| **Ventas** |
-| Registrar Venta | ✅ | ✅ |
-| Ver Todas las Ventas | ✅ | ❌ |
-| Ver Mis Ventas | ✅ | ✅ |
-| Editar Venta | ✅ | ❌ |
-| Cancelar Venta | ✅ | ❌ |
-| **Reportes** |
-| Reportes Globales | ✅ | ❌ |
-| Reportes Personales | ✅ | ✅ |
 
 ##  Flujo de Verificación
 
@@ -363,6 +337,4 @@ function requireSupervisor() {
     }
 }
 ```
-
-3. Actualizar la matriz de permisos según los nuevos roles.
 
