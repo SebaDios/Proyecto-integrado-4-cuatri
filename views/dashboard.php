@@ -35,7 +35,7 @@ $is_admin = isAdmin();
             <div class="menu-option">
                 <a href="users/index.php">
                     <h3>Gestionar Usuarios</h3>
-                    <p>Crear, modificar y eliminar usuarios del sistema</p>
+                    
                 </a>
             </div>
             
@@ -43,7 +43,7 @@ $is_admin = isAdmin();
             <div class="menu-option">
                 <a href="productos/index.php">
                     <h3>Gestionar Inventario</h3>
-                    <p>Administrar productos y alertas de stock</p>
+                    
                 </a>
             </div>
             <?php endif; ?>
@@ -52,7 +52,7 @@ $is_admin = isAdmin();
             <div class="menu-option">
                 <a href="sales/pos.php">
                     <h3>Punto de Venta</h3>
-                    <p>Registrar nuevas ventas y comandas</p>
+                    
                 </a>
             </div>
             
@@ -60,13 +60,7 @@ $is_admin = isAdmin();
             <div class="menu-option">
                 <a href="sales/reports.php">
                     <h3>Registros</h3>
-                    <p>
-                        <?php if ($is_admin): ?>
-                            Ver y modificar ventas, cortes de caja y reportes
-                        <?php else: ?>
-                            Ver ventas personales y corte de caja
-                        <?php endif; ?>
-                    </p>
+                    
                 </a>
             </div>
             

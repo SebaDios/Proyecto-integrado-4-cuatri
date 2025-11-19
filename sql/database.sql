@@ -33,6 +33,7 @@ CREATE TABLE productos (
 CREATE TABLE ventas (
     id_venta INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT NOT NULL,
+    nombre_cliente VARCHAR(100),
     fecha_venta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     total DECIMAL(10,2) NOT NULL,
     metodo_pago ENUM('Efectivo', 'Tarjeta', 'Transferencia') DEFAULT 'Efectivo',
