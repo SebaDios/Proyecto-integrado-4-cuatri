@@ -25,7 +25,7 @@ if ($startDate > $endDate) {
 
 $cashDate = sanitizeDateParam($_GET['cash_date'] ?? null, $today);
 
-$validPayments = ['Efectivo', 'Tarjeta', 'Transferencia'];
+$validPayments = ['Efectivo', 'Tarjeta'];
 $validStatuses = ['Completada', 'Cancelada'];
 $validMovements = ['Entrada', 'Salida', 'Ajuste'];
 
@@ -58,7 +58,7 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
             <div>
                 <p class="text-sm uppercase tracking-wide text-orange-500 font-semibold">Panel de Control</p>
                 <h1 class="text-3xl font-bold text-slate-900">Módulo de Registros</h1>
-                <p class="text-slate-500">Consulta consolidada de ventas, corte de caja e inventario.</p>
+                
             </div>
             <div class="flex items-center gap-4">
                 <div class="text-right">
@@ -114,7 +114,7 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
                     <p class="text-2xl font-bold text-slate-900">$<?php echo number_format($cashSummary['ticket_promedio'], 2); ?></p>
                 </div>
                 <div class="rounded-2xl border border-slate-100 p-4">
-                    <p class="text-xs uppercase tracking-wide text-slate-500">Efectivo vs Tarjeta</p>
+                    <p class="text-xs uppercase tracking-wide text-slate-500">pagos con Efectivo y Tarjeta</p>
                     <p class="text-sm text-slate-700">Efectivo: <span class="font-semibold">$<?php echo number_format($cashSummary['total_efectivo'], 2); ?></span></p>
                     <p class="text-sm text-slate-700">Tarjeta: <span class="font-semibold">$<?php echo number_format($cashSummary['total_tarjeta'], 2); ?></span></p>
                 </div>
@@ -125,8 +125,7 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
         <section class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-xl font-semibold text-slate-900">Filtros generales</h2>
-                    <p class="text-sm text-slate-500">Afecta a ventas y movimientos</p>
+                    <h2 class="text-xl font-semibold text-slate-900">Filtros de ventas</h2>
                 </div>
                 <a href="reports.php" class="text-sm text-orange-500 hover:text-orange-600 font-semibold">Limpiar filtros</a>
             </div>
@@ -156,20 +155,6 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
                             </option>
                         <?php endforeach; ?>
                     </select>
-                </label>
-                <label class="text-sm font-medium text-slate-600">Movimiento de inventario
-                    <select name="movement_type" class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
-                        <option value="">Todos</option>
-                        <?php foreach ($validMovements as $type): ?>
-                            <option value="<?php echo $type; ?>" <?php echo $filterMovement === $type ? 'selected' : ''; ?>>
-                                <?php echo $type; ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </label>
-                <label class="text-sm font-medium text-slate-600 md:col-span-2 lg:col-span-2">Buscar (cliente, usuario o folio)
-                    <input type="text" name="search" value="<?php echo htmlspecialchars($filterSearch); ?>" placeholder="Ej: Juan, María, 120"
-                        class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm">
                 </label>
                 <input type="hidden" name="cash_date" value="<?php echo htmlspecialchars($cashDate); ?>">
                 <div class="md:col-span-2 lg:col-span-4 flex justify-end">
@@ -257,62 +242,6 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
                 </table>
             </div>
         </section>
-
-        <!-- Inventario -->
-        <section class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
-            <div>
-                <h2 class="text-xl font-semibold text-slate-900">Movimientos de inventario</h2>
-                <p class="text-sm text-slate-500"><?php echo count($inventoryMovements); ?> eventos registrados</p>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="min-w-full text-sm">
-                    <thead>
-                        <tr class="text-left text-xs uppercase tracking-wide text-slate-500">
-                            <th class="py-3 px-2">Folio</th>
-                            <th class="py-3 px-2">Fecha</th>
-                            <th class="py-3 px-2">Producto</th>
-                            <th class="py-3 px-2">Tipo</th>
-                            <th class="py-3 px-2">Cantidad</th>
-                            <th class="py-3 px-2">Motivo</th>
-                            <th class="py-3 px-2">Usuario</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        <?php if (empty($inventoryMovements)): ?>
-                            <tr>
-                                <td colspan="7" class="text-center py-8 text-slate-400">No hay movimientos registrados para los filtros seleccionados.</td>
-                            </tr>
-                        <?php else: ?>
-                            <?php foreach ($inventoryMovements as $movement): ?>
-                                <tr class="hover:bg-slate-50">
-                                    <td class="py-3 px-2 font-semibold text-slate-800">#<?php echo $movement['id_movimiento']; ?></td>
-                                    <td class="py-3 px-2 text-slate-600"><?php echo date('d/m/Y H:i', strtotime($movement['fecha_movimiento'])); ?></td>
-                                    <td class="py-3 px-2"><?php echo htmlspecialchars($movement['producto']); ?></td>
-                                    <td class="py-3 px-2">
-                                        <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold
-                                            <?php
-                                                $color = [
-                                                    'Entrada' => 'bg-emerald-100 text-emerald-700',
-                                                    'Salida' => 'bg-rose-100 text-rose-700',
-                                                    'Ajuste' => 'bg-amber-100 text-amber-700'
-                                                ];
-                                                echo $color[$movement['tipo_movimiento']] ?? 'bg-slate-100 text-slate-700';
-                                            ?>">
-                                            <?php echo htmlspecialchars($movement['tipo_movimiento']); ?>
-                                        </span>
-                                    </td>
-                                    <td class="py-3 px-2 font-semibold text-slate-900"><?php echo (int) $movement['cantidad']; ?></td>
-                                    <td class="py-3 px-2 text-slate-600"><?php echo htmlspecialchars($movement['motivo'] ?? ''); ?></td>
-                                    <td class="py-3 px-2 text-slate-600"><?php echo htmlspecialchars($movement['usuario']); ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </div>
-
     <!-- Modal Detalle de venta -->
     <div id="sale-modal" class="hidden fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
         <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full mx-4">

@@ -245,51 +245,56 @@ class Product {
     
     // Contar resultados de búsqueda
     public function getSearchCount($searchTerm) {
-        try {
-            $searchTerm = '%' . $searchTerm . '%';
-            
-            $query = "SELECT COUNT(*) as total 
-                      FROM productos 
-                      WHERE (nombre LIKE :search OR descripcion LIKE :search OR categoria LIKE :search) 
-                      AND activo = 1";
-            
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':search', $searchTerm);
-            $stmt->execute();
-            $result = $stmt->fetch();
-            
-            return (int)$result['total'];
-            
-        } catch (PDOException $e) {
-            return 0;
-        }
+
+        
+        $searchPattern = "%{$searchTerm}%";
+        
+        $sql = "SELECT COUNT(*) as total 
+                FROM productos 
+                WHERE (nombre LIKE :search1 
+                       OR descripcion LIKE :search2 
+                       OR categoria LIKE :search3)
+                AND activo = 1";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':search1', $searchPattern, PDO::PARAM_STR);
+        $stmt->bindParam(':search2', $searchPattern, PDO::PARAM_STR);
+        $stmt->bindParam(':search3', $searchPattern, PDO::PARAM_STR);
+        $stmt->execute();
+        
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row['total'];
     }
     
+    
+    
     // Buscar productos paginados
-    public function searchPaginated($searchTerm, $page = 1, $perPage = 25) {
-        try {
-            $searchTerm = '%' . $searchTerm . '%';
-            $offset = ($page - 1) * $perPage;
-            
-            $query = "SELECT id_producto, nombre, descripcion, categoria, precio_venta, precio_compra, 
-                             stock_actual, stock_minimo, es_perecedero, fecha_vencimiento, activo 
-                      FROM productos 
-                      WHERE (nombre LIKE :search OR descripcion LIKE :search OR categoria LIKE :search) 
-                      AND activo = 1 
-                      ORDER BY nombre ASC
-                      LIMIT :limit OFFSET :offset";
-            
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':search', $searchTerm);
-            $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-            $stmt->execute();
-            
-            return $stmt->fetchAll();
-            
-        } catch (PDOException $e) {
-            return [];
-        }
+    public function searchPaginated($searchTerm, $page, $perPage) {
+        
+        
+        $searchPattern = "%{$searchTerm}%";
+        $offset = ($page - 1) * $perPage;
+        
+        $sql = "SELECT * 
+                FROM productos 
+                WHERE (nombre LIKE :search1 
+                       OR descripcion LIKE :search2 
+                       OR categoria LIKE :search3)
+                AND activo = 1
+                ORDER BY nombre ASC
+                LIMIT :limit OFFSET :offset";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':search1', $searchPattern, PDO::PARAM_STR);
+        $stmt->bindParam(':search2', $searchPattern, PDO::PARAM_STR);
+        $stmt->bindParam(':search3', $searchPattern, PDO::PARAM_STR);
+        $stmt->bindParam(':limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    
 }
 ?>

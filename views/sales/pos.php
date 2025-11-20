@@ -128,7 +128,7 @@ $user_name = $_SESSION['full_name'];
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-semibold mb-2 text-gray-700">Nombre del Cliente</label>
-                            <input id="customer-name" type="text" placeholder="Ej: Juan Pérez" 
+                            <input id="customer-name" type="text" 
                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none">
                         </div>
                         <div>

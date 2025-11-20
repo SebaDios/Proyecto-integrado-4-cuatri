@@ -3,7 +3,7 @@
 <html lang="es">
     <head>
     <?php define('BASE_PATH', __DIR__); ?>
-    <?php define('BASE_URL', 'http://localhost/ProyectoIntegrado/views/login.php'); ?>
+    <?php define('BASE_URL', 'http://localhost/ProyectoIntegrado/index.php'); ?>
 </head>
 <body>
     <?php require BASE_URL . "login.php"; ?>
