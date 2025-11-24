@@ -15,14 +15,7 @@ $is_admin = isAdmin();
     <link rel="stylesheet" href="../assets/css.css">
 </head>
 <body>
-    <header>
-        <h1>Antojitos ALKASE</h1>
-        <div class="user-info">
-            <span>Usuario: <?php echo htmlspecialchars($user_name); ?></span>
-            <span>Rol: <?php echo htmlspecialchars($user_role); ?></span>
-            <a href="../controllers/logout.php">Cerrar Sesión</a>
-        </div>
-    </header>
+    <?php include_once '../inc/header.php'; ?>
 
     <main>
         <h2>Bienvenido, <?php echo htmlspecialchars($user_name); ?></h2>

@@ -57,10 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="../../assets/css.css">
 </head>
 <body>
-    <header>
-        <h1>Crear Nuevo Producto</h1>
-        <a href="index.php">← Volver a Productos</a>
-    </header>
+    <?php include_once '../../inc/header.php'; ?>
+    
+    <div style="padding: 1rem 2rem; background: #efebe0; border-bottom: 1px solid #907952;">
+        <a href="index.php" class="btn-secondary">← Volver a Productos</a>
+    </div>
 
     <main>
         <?php if ($error): ?>

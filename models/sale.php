@@ -35,19 +35,20 @@ class Sale {
     }
     
     // Crear una nueva venta
-    public function createSale($id_usuario, $nombre_cliente, $total, $metodo_pago, $items) {
+    public function createSale($id_usuario, $nombre_cliente, $total, $metodo_pago, $tipo_servicio, $items) {
         try {
             $this->conn->beginTransaction();
             
             // Insertar la venta
-            $query = "INSERT INTO ventas (id_usuario, nombre_cliente, total, metodo_pago, estado) 
-                      VALUES (:id_usuario, :nombre_cliente, :total, :metodo_pago, 'Completada')";
+            $query = "INSERT INTO ventas (id_usuario, nombre_cliente, total, metodo_pago, tipo_servicio, estado) 
+                      VALUES (:id_usuario, :nombre_cliente, :total, :metodo_pago, :tipo_servicio, 'Pendiente')";
             
             $stmt = $this->conn->prepare($query);
             $stmt->bindParam(':id_usuario', $id_usuario);
             $stmt->bindParam(':nombre_cliente', $nombre_cliente);
             $stmt->bindParam(':total', $total);
             $stmt->bindParam(':metodo_pago', $metodo_pago);
+            $stmt->bindParam(':tipo_servicio', $tipo_servicio);
             $stmt->execute();
             
             $id_venta = $this->conn->lastInsertId();
@@ -115,7 +116,7 @@ class Sale {
     
     // Obtener venta completa con detalles
     public function getSaleById($id_venta) {
-        $query = "SELECT v.id_venta, v.fecha_venta, v.nombre_cliente, v.total, v.metodo_pago, v.estado,
+        $query = "SELECT v.id_venta, v.fecha_venta, v.nombre_cliente, v.total, v.metodo_pago, v.tipo_servicio, v.estado,
                          u.nombre_completo as usuario
                   FROM ventas v
                   INNER JOIN usuarios u ON v.id_usuario = u.id_usuario

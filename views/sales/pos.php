@@ -26,10 +26,87 @@ $user_name = $_SESSION['full_name'];
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Punto de Venta - Antojitos Alkace</title>
     
+    <!-- CSS Principal del Sistema -->
+    <link rel="stylesheet" href="../../assets/css.css">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
+        /* Asegurar que el header tenga prioridad sobre Tailwind */
+        .main-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            background: linear-gradient(135deg, #fdab25 0%, #907952 100%) !important;
+            color: #6c5336 !important;
+            padding: 1rem 2rem !important;
+            box-shadow: 0 2px 4px rgba(108, 83, 54, 0.2) !important;
+            min-height: 70px !important;
+            width: 100% !important;
+            position: relative !important;
+        }
+        
+        .main-header .header-left {
+            display: flex !important;
+            align-items: center !important;
+            gap: 1rem !important;
+        }
+        
+        .main-header .logo {
+            width: 60px !important;
+            height: 60px !important;
+            object-fit: contain !important;
+            border-radius: 50% !important;
+            background: #efebe0 !important;
+            padding: 5px !important;
+            flex-shrink: 0 !important;
+        }
+        
+        .main-header .company-name {
+            font-size: 1.5rem !important;
+            color: #6c5336 !important;
+            font-weight: 600 !important;
+            margin: 0 !important;
+        }
+        
+        .main-header .header-right {
+            display: flex !important;
+            align-items: center !important;
+            gap: 1.5rem !important;
+        }
+        
+        /* Estilos para botones del sistema */
+        .btn-primary, .btn-secondary {
+            display: inline-block !important;
+            padding: 0.5rem 1rem !important;
+            border: none !important;
+            border-radius: 4px !important;
+            text-decoration: none !important;
+            cursor: pointer !important;
+            font-size: 0.9rem !important;
+            transition: all 0.3s !important;
+            font-weight: 500 !important;
+        }
+        
+        .btn-primary {
+            background: #fdab25 !important;
+            color: #6c5336 !important;
+        }
+        
+        .btn-primary:hover {
+            background: #e09915 !important;
+        }
+        
+        .btn-secondary {
+            background: #907952 !important;
+            color: #efebe0 !important;
+        }
+        
+        .btn-secondary:hover {
+            background: #7a6545 !important;
+        }
+        
         body {
             margin: 0;
             padding: 0;
@@ -98,23 +175,14 @@ $user_name = $_SESSION['full_name'];
     </style>
 </head>
 <body class="min-h-full">
+    <?php include_once '../../inc/header.php'; ?>
+    
+    <div style="padding: 1rem 2rem; background: #efebe0; border-bottom: 1px solid #907952; display: flex; gap: 1rem; align-items: center;">
+        <a href="reports.php" class="btn-primary">Ver Registros</a>
+        <a href="../dashboard.php" class="btn-secondary">← Volver al Dashboard</a>
+    </div>
+    
     <div id="app" class="min-h-full bg-gradient-to-br from-orange-50 to-red-50 p-6">
-        
-        <!-- Header -->
-        <div class="max-w-7xl mx-auto mb-6">
-            <div class="bg-white rounded-2xl shadow-lg p-6 border-l-8 border-orange-500">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <h1 class="text-4xl font-bold mb-2 text-gray-800">Antojitos Alkase</h1>
-                        <p class="text-lg text-gray-600">Sistema de Punto de Venta</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm text-gray-600">Usuario: <?php echo htmlspecialchars($user_name); ?></p>
-                        <a href="../dashboard.php" class="text-orange-500 hover:text-orange-600 text-sm font-semibold">← Volver al Dashboard</a>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Main Grid -->
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -122,10 +190,10 @@ $user_name = $_SESSION['full_name'];
             <!-- Left Column -->
             <div class="lg:col-span-2 space-y-6">
                 
-                <!-- Cliente y Método de Pago -->
+                <!-- Cliente, Método de Pago y Tipo de Servicio -->
                 <div class="bg-white rounded-2xl shadow-lg p-6">
                     <h2 class="text-2xl font-bold mb-4 text-gray-800">Nueva Orden</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-semibold mb-2 text-gray-700">Nombre del Cliente</label>
                             <input id="customer-name" type="text" 
@@ -137,6 +205,14 @@ $user_name = $_SESSION['full_name'];
                                     class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none">
                                 <option value="Efectivo">Efectivo</option>
                                 <option value="Tarjeta">Tarjeta</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2 text-gray-700">Tipo de Servicio</label>
+                            <select id="tipo-servicio" 
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none">
+                                <option value="Comer aquí">Comer aquí</option>
+                                <option value="Para llevar">Para llevar</option>
                             </select>
                         </div>
                     </div>
@@ -280,6 +356,7 @@ $user_name = $_SESSION['full_name'];
         async function submitOrder() {
             const customerName = document.getElementById('customer-name').value.trim();
             const paymentMethod = document.getElementById('payment-method').value;
+            const tipoServicio = document.getElementById('tipo-servicio').value;
             const orderItems = Object.values(currentOrder);
             
             if (!customerName) {
@@ -299,6 +376,7 @@ $user_name = $_SESSION['full_name'];
             const orderData = {
                 nombre_cliente: customerName,
                 metodo_pago: paymentMethod,
+                tipo_servicio: tipoServicio,
                 items: orderItems.map(item => ({
                     id_platillo: item.id_platillo,
                     cantidad: item.cantidad

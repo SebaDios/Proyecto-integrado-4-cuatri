@@ -3,7 +3,7 @@ session_start();
 session_unset();
 session_destroy();
 
-// Redirigir al login
-header('Location: ../views/login.php');
+// Redirigir al index (login)
+header('Location: ../index.php');
 exit();
 ?>

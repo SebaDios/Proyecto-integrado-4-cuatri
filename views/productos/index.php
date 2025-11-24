@@ -62,10 +62,11 @@ if (isset($_GET['msg'])) {
     <link rel="stylesheet" href="../../assets/css.css">
 </head>
 <body>
-    <header>
-        <h1>Gestión de Productos</h1>
-        <a href="../dashboard.php">← Volver al Dashboard</a>
-    </header>
+    <?php include_once '../../inc/header.php'; ?>
+    
+    <div style="padding: 1rem 2rem; background: #efebe0; border-bottom: 1px solid #907952;">
+        <a href="../dashboard.php" class="btn-secondary">← Volver al Dashboard</a>
+    </div>
 
     <main>
         <?php if ($message): ?>

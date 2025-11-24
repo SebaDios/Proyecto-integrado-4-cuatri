@@ -36,6 +36,11 @@ class SalesController {
             return ['success' => false, 'message' => 'Método de pago inválido'];
         }
         
+        // Validar tipo de servicio
+        if (empty($data['tipo_servicio']) || !in_array($data['tipo_servicio'], ['Para llevar', 'Comer aquí'])) {
+            return ['success' => false, 'message' => 'Tipo de servicio inválido'];
+        }
+        
         // Calcular total
         $total = 0;
         $items = [];
@@ -74,8 +79,9 @@ class SalesController {
         $id_usuario = $_SESSION['user_id'];
         $nombre_cliente = trim($data['nombre_cliente']);
         $metodo_pago = $data['metodo_pago'];
+        $tipo_servicio = $data['tipo_servicio'];
         
-        $result = $this->saleModel->createSale($id_usuario, $nombre_cliente, $total, $metodo_pago, $items);
+        $result = $this->saleModel->createSale($id_usuario, $nombre_cliente, $total, $metodo_pago, $tipo_servicio, $items);
         
         if ($result['success']) {
             return [

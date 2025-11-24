@@ -141,7 +141,7 @@ class Record {
      * Actualizar el estado de una venta específica.
      */
     public function updateSaleStatus($saleId, $newStatus) {
-        $allowed = ['Completada', 'Cancelada'];
+        $allowed = ['Pendiente', 'Completada', 'Cancelada'];
         if (!in_array($newStatus, $allowed)) {
             return false;
         }
@@ -149,6 +149,22 @@ class Record {
         $query = "UPDATE ventas SET estado = :estado WHERE id_venta = :id";
         $stmt = $this->conn->prepare($query);
         $stmt->bindValue(':estado', $newStatus);
+        $stmt->bindValue(':id', $saleId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    /**
+     * Actualizar el método de pago de una venta específica.
+     */
+    public function updatePaymentMethod($saleId, $newPaymentMethod) {
+        $allowed = ['Efectivo', 'Tarjeta', 'Transferencia'];
+        if (!in_array($newPaymentMethod, $allowed)) {
+            return false;
+        }
+
+        $query = "UPDATE ventas SET metodo_pago = :metodo_pago WHERE id_venta = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindValue(':metodo_pago', $newPaymentMethod);
         $stmt->bindValue(':id', $saleId, PDO::PARAM_INT);
         return $stmt->execute();
     }

@@ -16,23 +16,50 @@ function sanitizeDateParam($value, $fallback) {
     return $date ? $date->format('Y-m-d') : $fallback;
 }
 
-$startDate = sanitizeDateParam($_GET['start_date'] ?? null, $today);
-$endDate = sanitizeDateParam($_GET['end_date'] ?? null, $today);
+// Inicializar array de filtros en sesión si no existe
+if (!isset($_SESSION['records_filters'])) {
+    $_SESSION['records_filters'] = [];
+}
+
+// Si se solicita limpiar filtros, resetear la sesión
+if (isset($_GET['clear_filters']) && $_GET['clear_filters'] == '1') {
+    $_SESSION['records_filters'] = [];
+    // Redirigir sin el parámetro clear_filters para evitar que se quede en la URL
+    header('Location: reports.php');
+    exit();
+}
+
+// Si hay parámetros GET (y no es limpiar filtros), actualizar la sesión con los nuevos valores
+if (!empty($_GET) && !isset($_GET['clear_filters'])) {
+    $_SESSION['records_filters']['start_date'] = $_GET['start_date'] ?? null;
+    $_SESSION['records_filters']['end_date'] = $_GET['end_date'] ?? null;
+    $_SESSION['records_filters']['cash_date'] = $_GET['cash_date'] ?? null;
+    $_SESSION['records_filters']['metodo_pago'] = $_GET['metodo_pago'] ?? null;
+    $_SESSION['records_filters']['estado'] = $_GET['estado'] ?? null;
+    $_SESSION['records_filters']['movement_type'] = $_GET['movement_type'] ?? null;
+    $_SESSION['records_filters']['search'] = $_GET['search'] ?? null;
+}
+
+// Obtener valores de la sesión o usar defaults
+$sessionFilters = $_SESSION['records_filters'];
+
+$startDate = sanitizeDateParam($sessionFilters['start_date'] ?? null, $today);
+$endDate = sanitizeDateParam($sessionFilters['end_date'] ?? null, $today);
 
 if ($startDate > $endDate) {
     [$startDate, $endDate] = [$endDate, $startDate];
 }
 
-$cashDate = sanitizeDateParam($_GET['cash_date'] ?? null, $today);
+$cashDate = sanitizeDateParam($sessionFilters['cash_date'] ?? null, $today);
 
 $validPayments = ['Efectivo', 'Tarjeta'];
-$validStatuses = ['Completada', 'Cancelada'];
+$validStatuses = ['Pendiente', 'Completada', 'Cancelada'];
 $validMovements = ['Entrada', 'Salida', 'Ajuste'];
 
-$filterPayment = in_array($_GET['metodo_pago'] ?? '', $validPayments) ? $_GET['metodo_pago'] : null;
-$filterStatus = in_array($_GET['estado'] ?? '', $validStatuses) ? $_GET['estado'] : null;
-$filterMovement = in_array($_GET['movement_type'] ?? '', $validMovements) ? $_GET['movement_type'] : null;
-$filterSearch = trim($_GET['search'] ?? '');
+$filterPayment = in_array($sessionFilters['metodo_pago'] ?? '', $validPayments) ? $sessionFilters['metodo_pago'] : null;
+$filterStatus = in_array($sessionFilters['estado'] ?? '', $validStatuses) ? $sessionFilters['estado'] : null;
+$filterMovement = in_array($sessionFilters['movement_type'] ?? '', $validMovements) ? $sessionFilters['movement_type'] : null;
+$filterSearch = trim($sessionFilters['search'] ?? '');
 
 $salesFilters = array_filter([
     'metodo_pago' => $filterPayment,
@@ -50,33 +77,99 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Módulo de Registros - Antojitos ALKASE</title>
+    
+    <!-- CSS Principal del Sistema -->
+    <link rel="stylesheet" href="../../assets/css.css">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* Asegurar que el header tenga prioridad sobre Tailwind */
+        .main-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            background: linear-gradient(135deg, #fdab25 0%, #907952 100%) !important;
+            color: #6c5336 !important;
+            padding: 1rem 2rem !important;
+            box-shadow: 0 2px 4px rgba(108, 83, 54, 0.2) !important;
+            min-height: 70px !important;
+            width: 100% !important;
+            position: relative !important;
+        }
+        
+        .main-header .header-left {
+            display: flex !important;
+            align-items: center !important;
+            gap: 1rem !important;
+        }
+        
+        .main-header .logo {
+            width: 60px !important;
+            height: 60px !important;
+            object-fit: contain !important;
+            border-radius: 50% !important;
+            background: #efebe0 !important;
+            padding: 5px !important;
+            flex-shrink: 0 !important;
+        }
+        
+        .main-header .company-name {
+            font-size: 1.5rem !important;
+            color: #6c5336 !important;
+            font-weight: 600 !important;
+            margin: 0 !important;
+        }
+        
+        .main-header .header-right {
+            display: flex !important;
+            align-items: center !important;
+            gap: 1.5rem !important;
+        }
+        
+        /* Estilos para botones del sistema */
+        .btn-primary, .btn-secondary {
+            display: inline-block !important;
+            padding: 0.5rem 1rem !important;
+            border: none !important;
+            border-radius: 4px !important;
+            text-decoration: none !important;
+            cursor: pointer !important;
+            font-size: 0.9rem !important;
+            transition: all 0.3s !important;
+            font-weight: 500 !important;
+        }
+        
+        .btn-primary {
+            background: #fdab25 !important;
+            color: #6c5336 !important;
+        }
+        
+        .btn-primary:hover {
+            background: #e09915 !important;
+        }
+        
+        .btn-secondary {
+            background: #907952 !important;
+            color: #efebe0 !important;
+        }
+        
+        .btn-secondary:hover {
+            background: #7a6545 !important;
+        }
+    </style>
 </head>
 <body class="bg-slate-50 min-h-screen">
+    <?php include_once '../../inc/header.php'; ?>
+    
+    <div style="padding: 1rem 2rem; background: #efebe0; border-bottom: 1px solid #907952;">
+        <a href="../dashboard.php" class="btn-secondary">← Volver al Dashboard</a>
+    </div>
+    
     <div class="max-w-7xl mx-auto py-10 px-6 space-y-8">
-        <header class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
-                <p class="text-sm uppercase tracking-wide text-orange-500 font-semibold">Panel de Control</p>
-                <h1 class="text-3xl font-bold text-slate-900">Módulo de Registros</h1>
-                
-            </div>
-            <div class="flex items-center gap-4">
-                <div class="text-right">
-                    <p class="text-sm text-slate-500">Usuario</p>
-                    <p class="font-semibold text-slate-800"><?php echo htmlspecialchars($_SESSION['full_name']); ?></p>
-                    <p class="text-xs uppercase tracking-wide text-slate-400"><?php echo htmlspecialchars($_SESSION['user_role']); ?></p>
-                </div>
-                <a href="../dashboard.php" class="inline-flex items-center gap-2 text-sm font-semibold text-orange-600 hover:text-orange-500">
-                    ← Regresar
-                </a>
-            </div>
-        </header>
 
-        <?php if (!$isAdmin): ?>
-            <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg text-sm">
-                Modo lectura: solo los administradores pueden modificar registros desde este módulo.
-            </div>
-        <?php endif; ?>
+
 
         <!-- Corte de caja -->
         <section class="bg-white rounded-2xl shadow-sm p-6 space-y-6">
@@ -127,7 +220,7 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
                 <div>
                     <h2 class="text-xl font-semibold text-slate-900">Filtros de ventas</h2>
                 </div>
-                <a href="reports.php" class="text-sm text-orange-500 hover:text-orange-600 font-semibold">Limpiar filtros</a>
+                <a href="reports.php?clear_filters=1" class="text-sm text-orange-500 hover:text-orange-600 font-semibold">Limpiar filtros</a>
             </div>
             <form method="GET" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <label class="text-sm font-medium text-slate-600">Desde
@@ -208,7 +301,15 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
                                     <td class="py-3 px-2 font-semibold text-slate-900">$<?php echo number_format($sale['total'], 2); ?></td>
                                     <td class="py-3 px-2">
                                         <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold
-                                            <?php echo $sale['estado'] === 'Completada' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'; ?>">
+                                            <?php 
+                                            if ($sale['estado'] === 'Completada') {
+                                                echo 'bg-emerald-100 text-emerald-700';
+                                            } elseif ($sale['estado'] === 'Pendiente') {
+                                                echo 'bg-yellow-100 text-yellow-700';
+                                            } else {
+                                                echo 'bg-rose-100 text-rose-700';
+                                            }
+                                            ?>">
                                             <?php echo htmlspecialchars($sale['estado']); ?>
                                         </span>
                                     </td>
@@ -217,9 +318,10 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
                                             <button data-sale="<?php echo $sale['id_venta']; ?>" class="btn-detail text-sm font-semibold text-orange-600 hover:text-orange-500">
                                                 Ver detalle
                                             </button>
-                                            <?php if ($isAdmin): ?>
-                                                <div class="flex items-center gap-2">
-                                                    <select class="status-select border border-slate-200 rounded-lg px-2 py-1 text-xs" data-sale="<?php echo $sale['id_venta']; ?>">
+                                            <div class="flex flex-col gap-2 items-center w-full">
+                                                <div class="flex items-center gap-2 w-full">
+                                                    <label class="text-[10px] text-slate-500 whitespace-nowrap">Estado:</label>
+                                                    <select class="status-select border border-slate-200 rounded-lg px-2 py-1 text-xs flex-1" data-sale="<?php echo $sale['id_venta']; ?>">
                                                         <?php foreach ($validStatuses as $status): ?>
                                                             <option value="<?php echo $status; ?>" <?php echo $sale['estado'] === $status ? 'selected' : ''; ?>>
                                                                 <?php echo $status; ?>
@@ -230,9 +332,20 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
                                                         Actualizar
                                                     </button>
                                                 </div>
-                                            <?php else: ?>
-                                                <span class="text-[11px] text-slate-400">Sin permisos</span>
-                                            <?php endif; ?>
+                                                <div class="flex items-center gap-2 w-full">
+                                                    <label class="text-[10px] text-slate-500 whitespace-nowrap">Pago:</label>
+                                                    <select class="payment-select border border-slate-200 rounded-lg px-2 py-1 text-xs flex-1" data-sale="<?php echo $sale['id_venta']; ?>">
+                                                        <?php foreach ($validPayments as $payment): ?>
+                                                            <option value="<?php echo $payment; ?>" <?php echo $sale['metodo_pago'] === $payment ? 'selected' : ''; ?>>
+                                                                <?php echo $payment; ?>
+                                                            </option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                    <button class="btn-payment text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg px-3 py-1" data-sale="<?php echo $sale['id_venta']; ?>">
+                                                        Actualizar
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -269,6 +382,7 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
     <script>
         const detailButtons = document.querySelectorAll('.btn-detail');
         const statusButtons = document.querySelectorAll('.btn-status');
+        const paymentButtons = document.querySelectorAll('.btn-payment');
         const modal = document.getElementById('sale-modal');
         const modalClose = document.getElementById('modal-close');
         const modalCloseFooter = document.getElementById('modal-close-footer');
@@ -289,6 +403,15 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
                 const select = document.querySelector(`.status-select[data-sale="${saleId}"]`);
                 if (!select) return;
                 await updateSaleStatus(saleId, select.value);
+            });
+        });
+
+        paymentButtons.forEach(button => {
+            button.addEventListener('click', async () => {
+                const saleId = button.dataset.sale;
+                const select = document.querySelector(`.payment-select[data-sale="${saleId}"]`);
+                if (!select) return;
+                await updatePaymentMethod(saleId, select.value);
             });
         });
 
@@ -343,6 +466,12 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
                             <p class="text-slate-500">Método de pago</p>
                             <p class="font-semibold text-slate-900">${sale.metodo_pago}</p>
                         </div>
+                        ${sale.tipo_servicio ? `
+                        <div>
+                            <p class="text-slate-500">Tipo de servicio</p>
+                            <p class="font-semibold text-slate-900">${sale.tipo_servicio}</p>
+                        </div>
+                        ` : ''}
                     </div>
                     <div class="mt-4">
                         <p class="text-slate-500 text-sm mb-2">Productos vendidos</p>
@@ -397,6 +526,27 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
                 }
 
                 showToast('Venta actualizada correctamente');
+                setTimeout(() => window.location.reload(), 800);
+            } catch (error) {
+                showToast('Error de comunicación con el servidor', 'error');
+            }
+        }
+
+        async function updatePaymentMethod(id, paymentMethod) {
+            try {
+                const response = await fetch('../../controllers/records.php?action=update_payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sale_id: id, payment_method: paymentMethod })
+                });
+
+                const result = await response.json();
+                if (!result.success) {
+                    showToast(result.message || 'No se pudo actualizar el método de pago.', 'error');
+                    return;
+                }
+
+                showToast('Método de pago actualizado correctamente');
                 setTimeout(() => window.location.reload(), 800);
             } catch (error) {
                 showToast('Error de comunicación con el servidor', 'error');
