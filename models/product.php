@@ -189,9 +189,10 @@ class Product {
         return $stmt->fetchAll();
     }
     
-    // Verificar si un producto existe por nombre
+    // Verificar si un producto existe por nombre (comparación case-insensitive)
     public function nameExists($nombre, $exclude_id = null) {
-        $query = "SELECT COUNT(*) as count FROM productos WHERE nombre = :nombre";
+        // Comparación case-insensitive usando LOWER() para evitar duplicados con diferentes mayúsculas/minúsculas
+        $query = "SELECT COUNT(*) as count FROM productos WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(:nombre))";
         
         if ($exclude_id) {
             $query .= " AND id_producto != :exclude_id";

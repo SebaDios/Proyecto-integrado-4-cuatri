@@ -46,9 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($stock_minimo < 0) {
         $error = 'El stock mínimo no puede ser negativo';
     } else {
-        // Verificar si el nombre ya existe (excluyendo el producto actual)
+        // Verificar si el nombre ya existe en el inventario (excluyendo el producto actual)
         if ($productModel->nameExists($nombre, $product_id)) {
-            $error = 'Ya existe otro producto con ese nombre';
+            $error = 'Ya existe otro producto con ese nombre en el inventario. Por favor, verifica el nombre o edita el producto existente.';
         } else {
             if ($productModel->update($product_id, $nombre, $descripcion, $categoria, $precio_venta, 
                                      $precio_compra, $stock_actual, $stock_minimo, $es_perecedero, 

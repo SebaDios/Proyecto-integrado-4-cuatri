@@ -164,6 +164,7 @@ $inventoryMovements = $recordsModel->getInventoryMovements($startDate, $endDate,
     <?php include_once '../../inc/header.php'; ?>
     
     <div style="padding: 1rem 2rem; background: #efebe0; border-bottom: 1px solid #907952;">
+    <a href="pos.php" class="btn-primary">Ver POS</a>
         <a href="../dashboard.php" class="btn-secondary">← Volver al Dashboard</a>
     </div>
     

@@ -6,6 +6,7 @@ require_once '../../models/sale.php';
 
 $saleModel = new Sale();
 $platillos = $saleModel->getPlatillos();
+$bebidas = $saleModel->getBebidas();
 
 // Agrupar platillos por categoría
 $categorias = [];
@@ -15,6 +16,16 @@ foreach ($platillos as $platillo) {
         $categorias[$categoria] = [];
     }
     $categorias[$categoria][] = $platillo;
+}
+
+// Agrupar bebidas por categoría
+$categoriasBebidas = [];
+foreach ($bebidas as $bebida) {
+    $categoria = $bebida['categoria'];
+    if (!isset($categoriasBebidas[$categoria])) {
+        $categoriasBebidas[$categoria] = [];
+    }
+    $categoriasBebidas[$categoria][] = $bebida;
 }
 
 $user_name = $_SESSION['full_name'];
@@ -265,6 +276,60 @@ $user_name = $_SESSION['full_name'];
                     </div>
                 </div>
 
+                <!-- Bebidas -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h2 class="text-2xl font-bold mb-4 text-gray-800">Bebidas</h2>
+                    <div id="bebidas-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <?php 
+                        $emojiBebidas = [
+                            'Refrescos' => '',
+                            'Jugos' => '',
+                            'Aguas' => ''
+                        ];
+                        
+                        foreach ($bebidas as $bebida): 
+                            $emoji = $emojiBebidas[$bebida['categoria']] ?? '🥤';
+                            $stockBajo = $bebida['stock_actual'] <= $bebida['stock_minimo'];
+                            $sinStock = $bebida['stock_actual'] <= 0;
+                        ?>
+                            <div class="menu-item bg-white border-2 rounded-xl p-4 <?php echo $sinStock ? 'border-red-300 opacity-60' : ($stockBajo ? 'border-yellow-300' : 'border-gray-200'); ?>">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-3xl"><?php echo $emoji; ?></span>
+                                        <div>
+                                            <h3 class="item-name font-bold text-lg text-gray-800"><?php echo htmlspecialchars($bebida['nombre']); ?></h3>
+                                            <p class="item-price font-bold text-orange-500">$<?php echo number_format($bebida['precio_venta'], 2); ?></p>
+                                            <p class="text-xs <?php echo $sinStock ? 'text-red-600 font-bold' : ($stockBajo ? 'text-yellow-600' : 'text-gray-500'); ?>">
+                                                Stock: <?php echo $bebida['stock_actual']; ?> 
+                                                <?php if ($stockBajo && !$sinStock): ?>
+                                                    <span class="font-bold">⚠️ Bajo</span>
+                                                <?php elseif ($sinStock): ?>
+                                                    <span class="font-bold">❌ Agotado</span>
+                                                <?php endif; ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-center gap-3">
+                                    <button 
+                                        class="quantity-btn minus-btn w-10 h-10 rounded-lg text-white font-bold text-xl flex items-center justify-center bg-red-500 hover:bg-red-600 <?php echo $sinStock ? 'opacity-50 cursor-not-allowed' : ''; ?>"
+                                        onclick="updateBebidaQuantity(<?php echo $bebida['id_producto']; ?>, -1)"
+                                        <?php echo $sinStock ? 'disabled' : ''; ?>
+                                    >-</button>
+                                    <div class="quantity-display w-16 h-10 rounded-lg flex items-center justify-center font-bold text-lg bg-yellow-50 text-gray-800">
+                                        <span id="bebida-qty-<?php echo $bebida['id_producto']; ?>">0</span>
+                                    </div>
+                                    <button 
+                                        class="quantity-btn plus-btn w-10 h-10 rounded-lg text-white font-bold text-xl flex items-center justify-center bg-orange-500 hover:bg-orange-600 <?php echo $sinStock ? 'opacity-50 cursor-not-allowed' : ''; ?>"
+                                        onclick="updateBebidaQuantity(<?php echo $bebida['id_producto']; ?>, 1)"
+                                        <?php echo $sinStock ? 'disabled' : ''; ?>
+                                    >+</button>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
                 <!-- Submit -->
                 <div class="bg-white rounded-2xl shadow-lg p-6">
                     <button id="submit-order-btn" class="w-full py-4 rounded-xl font-bold text-lg text-white bg-orange-500 hover:bg-orange-600 transition">
@@ -299,10 +364,14 @@ $user_name = $_SESSION['full_name'];
         // Datos de platillos desde PHP
         const platillos = <?php echo json_encode($platillos); ?>;
         
+        // Datos de bebidas desde PHP
+        const bebidas = <?php echo json_encode($bebidas); ?>;
+        
         // Estado de la orden actual
         let currentOrder = {};
+        let currentBebidasOrder = {};
         
-        // Función para actualizar cantidad
+        // Función para actualizar cantidad de platillos
         function updateQuantity(platilloId, change) {
             const platillo = platillos.find(p => p.id_platillo == platilloId);
             if (!platillo) return;
@@ -326,20 +395,100 @@ $user_name = $_SESSION['full_name'];
             updateCurrentOrderDisplay();
         }
         
+        // Función para actualizar cantidad de bebidas con validación de stock
+        async function updateBebidaQuantity(productoId, change) {
+            const bebida = bebidas.find(b => b.id_producto == productoId);
+            if (!bebida) return;
+            
+            const currentQty = currentBebidasOrder[productoId]?.cantidad || 0;
+            const newQty = currentQty + change;
+            
+            // Validar que no sea negativo
+            if (newQty < 0) return;
+            
+            // Validar stock antes de incrementar
+            if (change > 0) {
+                const stockCheck = await checkStock(productoId, newQty);
+                if (!stockCheck.available) {
+                    showMessage(`Stock insuficiente para ${bebida.nombre}. Disponible: ${stockCheck.stock_disponible}`, 'error');
+                    return;
+                }
+            }
+            
+            if (!currentBebidasOrder[productoId]) {
+                currentBebidasOrder[productoId] = {
+                    id_producto: bebida.id_producto,
+                    nombre: bebida.nombre,
+                    precio: parseFloat(bebida.precio_venta),
+                    cantidad: 0
+                };
+            }
+            
+            currentBebidasOrder[productoId].cantidad = newQty;
+            
+            if (currentBebidasOrder[productoId].cantidad <= 0) {
+                delete currentBebidasOrder[productoId];
+            }
+            
+            document.getElementById(`bebida-qty-${productoId}`).textContent = currentBebidasOrder[productoId]?.cantidad || 0;
+            updateCurrentOrderDisplay();
+        }
+        
+        // Función para verificar stock de un producto
+        async function checkStock(productoId, cantidad) {
+            try {
+                const response = await fetch('../../controllers/sales.php?action=check_stock', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id_producto: productoId,
+                        cantidad: cantidad
+                    })
+                });
+                
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Error al verificar stock:', error);
+                return { available: false, message: 'Error al verificar stock' };
+            }
+        }
+        
         // Actualizar visualización de la orden actual
         function updateCurrentOrderDisplay() {
             const container = document.getElementById('current-order');
             const orderItems = Object.values(currentOrder);
+            const bebidasItems = Object.values(currentBebidasOrder);
+            const allItems = [...orderItems, ...bebidasItems];
             
-            if (orderItems.length === 0) {
+            if (allItems.length === 0) {
                 container.innerHTML = '<p class="text-gray-500 text-center py-4">No hay productos seleccionados</p>';
             } else {
-                container.innerHTML = orderItems.map(item => `
-                    <div class="flex justify-between items-center py-2 border-b border-gray-200">
-                        <span class="text-gray-700">${item.cantidad}x ${item.nombre}</span>
-                        <span class="font-bold text-gray-800">$${(item.precio * item.cantidad).toFixed(2)}</span>
-                    </div>
-                `).join('');
+                let html = '';
+                
+                // Mostrar platillos
+                if (orderItems.length > 0) {
+                    html += orderItems.map(item => `
+                        <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                            <span class="text-gray-700">${item.cantidad}x ${item.nombre}</span>
+                            <span class="font-bold text-gray-800">$${(item.precio * item.cantidad).toFixed(2)}</span>
+                        </div>
+                    `).join('');
+                }
+                
+                // Mostrar bebidas
+                if (bebidasItems.length > 0) {
+                    html += bebidasItems.map(item => `
+                        <div class="flex justify-between items-center py-2 border-b border-gray-200">
+                            <span class="text-gray-700">${item.cantidad}x ${item.nombre} 🥤</span>
+                            <span class="font-bold text-gray-800">$${(item.precio * item.cantidad).toFixed(2)}</span>
+                        </div>
+                    `).join('');
+                }
+                
+                container.innerHTML = html;
             }
             
             updateOrderTotal();
@@ -347,7 +496,9 @@ $user_name = $_SESSION['full_name'];
         
         // Actualizar total
         function updateOrderTotal() {
-            const total = Object.values(currentOrder).reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            const totalPlatillos = Object.values(currentOrder).reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            const totalBebidas = Object.values(currentBebidasOrder).reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
+            const total = totalPlatillos + totalBebidas;
             const totalElement = document.getElementById('order-total');
             totalElement.textContent = `$${total.toFixed(2)}`;
         }
@@ -358,15 +509,25 @@ $user_name = $_SESSION['full_name'];
             const paymentMethod = document.getElementById('payment-method').value;
             const tipoServicio = document.getElementById('tipo-servicio').value;
             const orderItems = Object.values(currentOrder);
+            const bebidasItems = Object.values(currentBebidasOrder);
             
             if (!customerName) {
                 showMessage('Por favor ingresa el nombre del cliente', 'error');
                 return;
             }
             
-            if (orderItems.length === 0) {
-                showMessage('Por favor selecciona al menos un platillo', 'error');
+            if (orderItems.length === 0 && bebidasItems.length === 0) {
+                showMessage('Por favor selecciona al menos un platillo o bebida', 'error');
                 return;
+            }
+            
+            // Validar stock de todas las bebidas antes de enviar
+            for (const bebida of bebidasItems) {
+                const stockCheck = await checkStock(bebida.id_producto, bebida.cantidad);
+                if (!stockCheck.available) {
+                    showMessage(`Stock insuficiente para ${bebida.nombre}. ${stockCheck.message}`, 'error');
+                    return;
+                }
             }
             
             const submitBtn = document.getElementById('submit-order-btn');
@@ -377,8 +538,12 @@ $user_name = $_SESSION['full_name'];
                 nombre_cliente: customerName,
                 metodo_pago: paymentMethod,
                 tipo_servicio: tipoServicio,
-                items: orderItems.map(item => ({
+                platillos: orderItems.map(item => ({
                     id_platillo: item.id_platillo,
+                    cantidad: item.cantidad
+                })),
+                productos: bebidasItems.map(item => ({
+                    id_producto: item.id_producto,
                     cantidad: item.cantidad
                 }))
             };
@@ -398,9 +563,14 @@ $user_name = $_SESSION['full_name'];
                     showMessage('¡Orden registrada exitosamente!', 'success');
                     // Limpiar orden
                     currentOrder = {};
+                    currentBebidasOrder = {};
                     document.getElementById('customer-name').value = '';
                     platillos.forEach(platillo => {
                         const qtyElement = document.getElementById(`qty-${platillo.id_platillo}`);
+                        if (qtyElement) qtyElement.textContent = '0';
+                    });
+                    bebidas.forEach(bebida => {
+                        const qtyElement = document.getElementById(`bebida-qty-${bebida.id_producto}`);
                         if (qtyElement) qtyElement.textContent = '0';
                     });
                     updateCurrentOrderDisplay();

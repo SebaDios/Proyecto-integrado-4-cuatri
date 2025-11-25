@@ -28,8 +28,17 @@ class SalesController {
             return ['success' => false, 'message' => 'El nombre del cliente es requerido'];
         }
         
-        if (empty($data['items']) || !is_array($data['items']) || count($data['items']) === 0) {
-            return ['success' => false, 'message' => 'Debe seleccionar al menos un platillo'];
+        // Separar items en platillos y productos (bebidas)
+        $platillosItems = isset($data['platillos']) && is_array($data['platillos']) ? $data['platillos'] : [];
+        $productosItems = isset($data['productos']) && is_array($data['productos']) ? $data['productos'] : [];
+        
+        // Compatibilidad con formato anterior (solo platillos)
+        if (empty($platillosItems) && empty($productosItems) && isset($data['items'])) {
+            $platillosItems = $data['items'];
+        }
+        
+        if (empty($platillosItems) && empty($productosItems)) {
+            return ['success' => false, 'message' => 'Debe seleccionar al menos un platillo o bebida'];
         }
         
         if (empty($data['metodo_pago']) || !in_array($data['metodo_pago'], ['Efectivo', 'Tarjeta'])) {
@@ -41,11 +50,11 @@ class SalesController {
             return ['success' => false, 'message' => 'Tipo de servicio inválido'];
         }
         
-        // Calcular total
+        // Calcular total y procesar platillos
         $total = 0;
-        $items = [];
+        $platillos = [];
         
-        foreach ($data['items'] as $item) {
+        foreach ($platillosItems as $item) {
             if (empty($item['id_platillo']) || empty($item['cantidad']) || $item['cantidad'] <= 0) {
                 continue;
             }
@@ -61,7 +70,7 @@ class SalesController {
             $cantidad = intval($item['cantidad']);
             $subtotal = $precio * $cantidad;
             
-            $items[] = [
+            $platillos[] = [
                 'id_platillo' => $platillo['id_platillo'],
                 'nombre' => $platillo['nombre_platillo'],
                 'precio' => $precio,
@@ -71,7 +80,48 @@ class SalesController {
             $total += $subtotal;
         }
         
-        if (count($items) === 0) {
+        // Calcular total y procesar productos (bebidas) con validación de stock
+        $productos = [];
+        
+        foreach ($productosItems as $item) {
+            if (empty($item['id_producto']) || empty($item['cantidad']) || $item['cantidad'] <= 0) {
+                continue;
+            }
+            
+            // Obtener información del producto
+            $producto = $this->saleModel->getProductoById($item['id_producto']);
+            
+            if (!$producto) {
+                return ['success' => false, 'message' => 'Producto no encontrado: ' . $item['id_producto']];
+            }
+            
+            // Validar stock antes de agregar
+            $cantidad = intval($item['cantidad']);
+            $stockCheck = $this->saleModel->checkStock($item['id_producto'], $cantidad);
+            
+            if (!$stockCheck['available']) {
+                return [
+                    'success' => false, 
+                    'message' => 'Stock insuficiente para ' . $producto['nombre'] . '. ' . $stockCheck['message'],
+                    'producto' => $producto['nombre'],
+                    'stock_disponible' => $stockCheck['stock_disponible'] ?? 0
+                ];
+            }
+            
+            $precio = floatval($producto['precio_venta']);
+            $subtotal = $precio * $cantidad;
+            
+            $productos[] = [
+                'id_producto' => $producto['id_producto'],
+                'nombre' => $producto['nombre'],
+                'precio' => $precio,
+                'cantidad' => $cantidad
+            ];
+            
+            $total += $subtotal;
+        }
+        
+        if (count($platillos) === 0 && count($productos) === 0) {
             return ['success' => false, 'message' => 'No hay items válidos en la orden'];
         }
         
@@ -81,7 +131,7 @@ class SalesController {
         $metodo_pago = $data['metodo_pago'];
         $tipo_servicio = $data['tipo_servicio'];
         
-        $result = $this->saleModel->createSale($id_usuario, $nombre_cliente, $total, $metodo_pago, $tipo_servicio, $items);
+        $result = $this->saleModel->createSaleWithProducts($id_usuario, $nombre_cliente, $total, $metodo_pago, $tipo_servicio, $platillos, $productos);
         
         if ($result['success']) {
             return [
@@ -120,6 +170,53 @@ class SalesController {
             'categorias' => $categorias
         ];
     }
+    
+    // Obtener bebidas para el menú
+    public function getBebidas() {
+        requireLogin();
+        
+        $bebidas = $this->saleModel->getBebidas();
+        
+        // Agrupar por categoría
+        $categorias = [];
+        foreach ($bebidas as $bebida) {
+            $categoria = $bebida['categoria'];
+            if (!isset($categorias[$categoria])) {
+                $categorias[$categoria] = [];
+            }
+            $categorias[$categoria][] = $bebida;
+        }
+        
+        return [
+            'success' => true,
+            'bebidas' => $bebidas,
+            'categorias' => $categorias
+        ];
+    }
+    
+    // Verificar stock de un producto
+    public function checkProductStock() {
+        requireLogin();
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return ['success' => false, 'message' => 'Método no permitido'];
+        }
+        
+        $data = json_decode(file_get_contents('php://input'), true);
+        
+        if (empty($data['id_producto']) || empty($data['cantidad'])) {
+            return ['success' => false, 'message' => 'Datos incompletos'];
+        }
+        
+        $stockCheck = $this->saleModel->checkStock($data['id_producto'], intval($data['cantidad']));
+        
+        return [
+            'success' => $stockCheck['available'],
+            'available' => $stockCheck['available'],
+            'message' => $stockCheck['message'] ?? '',
+            'stock_disponible' => $stockCheck['stock_disponible'] ?? 0
+        ];
+    }
 }
 
 // Manejar peticiones AJAX
@@ -135,6 +232,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['action'])) {
             
         case 'get_platillos':
             echo json_encode($controller->getPlatillos());
+            exit;
+            
+        case 'get_bebidas':
+            echo json_encode($controller->getBebidas());
+            exit;
+            
+        case 'check_stock':
+            echo json_encode($controller->checkProductStock());
             exit;
             
         default:
